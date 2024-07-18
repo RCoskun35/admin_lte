@@ -14,7 +14,6 @@ import { jwtDecode, JwtPayload } from 'jwt-decode';
   
 })
 export class AppComponent {
-[x: string]: any;
   modules:any[]= [];
   roles:any[] = [];
   selectedOptions: number[] = [];
@@ -33,47 +32,17 @@ export class AppComponent {
   constructor(private http:HttpService) {
   }
 
-  addReport(){
-    this.http.post("api/Modules/AddReport",{},(res: any)=>{
-      alert("Ekleme işlem başarılı");
-    },(error: any)=>{
-      if(error.status==401){
-        alert("Eklemeye Yetkiniz yok");
-      }
-    });
-  }
-  editReport(){
-    this.http.post("api/Modules/EditReport",{},(res: any)=>{
-      alert("Güncelleme işlem başarılı");
-    },(error: any)=>{
-      if(error.status==401){
-        alert("Güncellemeye Yetkiniz yok");
-      }
-    });
-  }
-  addRoles(){
-    var data ={
-      name: this.roleName
-    };
-    this.http.post("api/Manager/AddRole",data,(res: any[])=>{
-      this.http.post("api/Modules/GetRoles",{},(res: any[])=>{
-        this.roles = res;
-        this.selectRoles = this.roles.map(role => {
-          return {id:role.id, value: role.name };
-        });
-      })
-    });
-  };
+ 
   login(){
     this.http.post("api/Auth/Login",{emailOrUserName:this.emailOrUserName,password:this.password},(res: any)=>{
       localStorage.removeItem('token');
         localStorage.setItem('token',res.data.token);
-        
         this.http.post("api/Modules/GetUser",{},(res: any)=>{
           localStorage.removeItem('user');
          localStorage.setItem('user',JSON.stringify(res));
           
         });
+        
         this.http.post("api/Modules/GetUsers",{},(res: any[])=>{
           this.users = res;
         });
@@ -81,7 +50,6 @@ export class AppComponent {
   }
   setVisible(enumValue: any): boolean {
     var userModules = JSON.parse(localStorage.getItem('user')!);
-   
     if (userModules.modules.includes(enumValue.toString())) {
         return true;
     }
@@ -110,6 +78,7 @@ export class AppComponent {
     })
     this.http.post("api/Modules/GetUsers",{},(res: any[])=>{
       this.users = res;
+      
     })
   }
   addModule(roleId: number) {
@@ -145,4 +114,35 @@ export class AppComponent {
       })
     });
   }
+  addReport(){
+    this.http.post("api/Modules/AddReport",{},(res: any)=>{
+      alert("Ekleme işlem başarılı");
+    },(error: any)=>{
+      if(error.status==401){
+        alert("Eklemeye Yetkiniz yok");
+      }
+    });
+  }
+  editReport(){
+    this.http.post("api/Modules/EditReport",{},(res: any)=>{
+      alert("Güncelleme işlem başarılı");
+    },(error: any)=>{
+      if(error.status==401){
+        alert("Güncellemeye Yetkiniz yok");
+      }
+    });
+  }
+  addRoles(){
+    var data ={
+      name: this.roleName
+    };
+    this.http.post("api/Manager/AddRole",data,(res: any[])=>{
+      this.http.post("api/Modules/GetRoles",{},(res: any[])=>{
+        this.roles = res;
+        this.selectRoles = this.roles.map(role => {
+          return {id:role.id, value: role.name };
+        });
+      })
+    });
+  };
 }
